@@ -24,7 +24,8 @@ async function loadAll() {
         <strong>${p.nombre} ${p.apellido}</strong>
         <br>
         <label>Correo: </label>
-        <input id="mail-${p.id}" value="${p.mail}">
+        // <input id="mail-${p.id}" value="${p.mail}">
+        <p>${p.mail}</p>
         <br><br>
 
         <label>
