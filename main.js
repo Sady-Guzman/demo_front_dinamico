@@ -9,8 +9,8 @@ async function loadPeople() {
   container.innerHTML = "Loading...";
 
   const { data, error } = await supabase
-    .from("student_center")
-    .select("name, role, email");
+    .from("personas")
+    .select("nombre, cargo, mail");
 
   if (error) {
     container.innerHTML = `<p style="color:red;">${error.message}</p>`;
