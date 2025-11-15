@@ -1,25 +1,42 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <title>Supabase Demo</title>
+  <meta charset="UTF-8" />
+  <title>Personas CEC</title>
+
   <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+    }
+
     .person-card {
       border: 1px solid #aaa;
-      padding: 12px;
-      border-radius: 6px;
-      margin-bottom: 12px;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      background: #f9f9f9;
+    }
+
+    h1, h2, h3 {
+      margin: 4px 0;
     }
   </style>
 </head>
+
 <body>
 
-<h1>Student Center Roles</h1>
+  <h1>Miembros CEC</h1>
+  <p>Mostrando solo personas donde <b>cec = true</b>:</p>
 
-<div id="people-container"></div>
+  <div id="people-container"></div>
 
-<!-- Load Supabase directly from CDN (no build step needed) -->
-<script src="https://esm.sh/@supabase/supabase-js"></script>
-<script src="main.js"></script>
+  <!-- Supabase CDN (sin necesidad de npm ni build) -->
+  <script src="https://esm.sh/@supabase/supabase-js"></script>
+
+  <!-- Tu script principal -->
+  <script src="main.js"></script>
 
 </body>
 </html>
