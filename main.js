@@ -1,11 +1,3 @@
-/*
-  import { createClient } from '@supabase/supabase-js'
-  
-  const supabaseUrl = 'https://cpmygciraogszswfzsiq.supabase.co'
-  const supabaseKey = process.env.SUPABASE_KEY
-  const supabase = createClient(supabaseUrl, supabaseKey)
-*/
-
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
 const supabaseUrl = "https://cpmygciraogszswfzsiq.supabase.co";
@@ -29,11 +21,11 @@ async function loadPersons() {
 
     data.forEach(person => {
         const block = document.createElement("div");
+        block.classList.add("person-card");
         block.innerHTML = `
             <h1>${person.cargo}</h1>
             <h2>${person.nombre} ${person.apellido}</h2>
             <h3>${person.mail}</h3>
-            <hr>
         `;
         container.appendChild(block);
     });
