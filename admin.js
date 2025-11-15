@@ -16,17 +16,76 @@ async function loadAll() {
 
   data.forEach(p => {
     const item = document.createElement("div");
+
+    const cargoVisible = p.cec ? "block" : "none";
+
     item.innerHTML = `
-      <strong>${p.nombre} ${p.apellido}</strong> — ${p.cargo}
-      <br>${p.mail}
-      <br>CEC: ${p.cec ? "Sí" : "No"}
-      <hr>
+      <div style="border:1px solid #ccc; padding: 12px; border-radius: 8px; margin-bottom: 10px;">
+        <strong>${p.nombre} ${p.apellido}</strong>
+        <br>
+        <label>Correo: </label>
+        <input id="mail-${p.id}" value="${p.mail}">
+        <br><br>
+
+        <label>
+          <input type="checkbox" id="cec-${p.id}" ${p.cec ? "checked" : ""}>
+          ¿Miembro del CEC?
+        </label>
+
+        <br><br>
+
+        <div id="cargo-field-${p.id}" style="display: ${cargoVisible}">
+          <label>Cargo:</label>
+          <input id="cargo-${p.id}" value="${p.cargo || ""}">
+        </div>
+
+        <br>
+        <button id="update-${p.id}">Actualizar</button>
+      </div>
     `;
+
     container.appendChild(item);
+
+    // Mostrar/ocultar cargo dinámicamente
+    const cecCheckbox = document.getElementById(`cec-${p.id}`);
+    cecCheckbox.addEventListener("change", () => {
+      const show = cecCheckbox.checked ? "block" : "none";
+      document.getElementById(`cargo-field-${p.id}`).style.display = show;
+    });
+
+    // Botón actualizar
+    document.getElementById(`update-${p.id}`).addEventListener("click", () => {
+      updatePerson(p.id);
+    });
   });
 }
 
-// Agregar persona nueva
+// ACTUALIZAR PERSONA
+async function updatePerson(id) {
+  const mail = document.getElementById(`mail-${id}`).value;
+  const cec = document.getElementById(`cec-${id}`).checked;
+  const cargo = cec ? document.getElementById(`cargo-${id}`).value : null;
+
+  const { error } = await supabase
+    .from("personas")
+    .update({
+      mail,
+      cec,
+      cargo
+    })
+    .eq("id", id);
+
+  if (error) {
+    alert("Error al actualizar");
+    console.error(error);
+    return;
+  }
+
+  alert("Persona actualizada");
+  loadAll();
+}
+
+// BOTÓN PARA AGREGAR PERSONA NUEVA
 async function addPerson() {
   const nombre = document.getElementById("nombre").value;
   const apellido = document.getElementById("apellido").value;
