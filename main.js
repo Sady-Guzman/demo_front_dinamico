@@ -1,38 +1,42 @@
-// create the client directly in JS
-const supabase = supabase_js.createClient(
-  "https://cpmygciraogszswfzsiq.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNwbXlnY2lyYW9nc3pzd2Z6c2lxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMyMjU3ODQsImV4cCI6MjA3ODgwMTc4NH0.Nr2sCPc6-pLUJTJFputQMRy2CFvx0EicYbBvtpjNvaQ"
-);
+/*
+  import { createClient } from '@supabase/supabase-js'
+  
+  const supabaseUrl = 'https://cpmygciraogszswfzsiq.supabase.co'
+  const supabaseKey = process.env.SUPABASE_KEY
+  const supabase = createClient(supabaseUrl, supabaseKey)
+*/
 
-async function loadPeople() {
-  const container = document.getElementById("people-container");
-  container.innerHTML = "Cargando datos...";
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
-  // Consulta filtrando solo donde cec == true
-  const { data, error } = await supabase
-    .from("personas")
-    .select("nombre, apellido, cargo, mail, cec")
-    .eq("cec", true);
+const supabaseUrl = "https://cpmygciraogszswfzsiq.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNwbXlnY2lyYW9nc3pzd2Z6c2lxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMyMjU3ODQsImV4cCI6MjA3ODgwMTc4NH0.Nr2sCPc6-pLUJTJFputQMRy2CFvx0EicYbBvtpjNvaQ";
 
-  if (error) {
-    container.innerHTML = `<p style="color:red;">${error.message}</p>`;
-    return;
-  }
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-  container.innerHTML = "";
+async function loadPersons() {
+    const { data, error } = await supabase
+        .from("personas")
+        .select("*")
+        .eq("cec", true);
 
-  data.forEach(persona => {
-    const div = document.createElement("div");
-    div.className = "person-card";
+    if (error) {
+        console.error("Error al obtener personas:", error);
+        return;
+    }
 
-    div.innerHTML = `
-      <h1>${persona.cargo}</h1>
-      <h2>${persona.nombre} ${persona.apellido}</h2>
-      <h3>${persona.mail}</h3>
-    `;
+    const container = document.getElementById("person-list");
+    container.innerHTML = "";
 
-    container.appendChild(div);
-  });
+    data.forEach(person => {
+        const block = document.createElement("div");
+        block.innerHTML = `
+            <h1>${person.cargo}</h1>
+            <h2>${person.nombre} ${person.apellido}</h2>
+            <h3>${person.mail}</h3>
+            <hr>
+        `;
+        container.appendChild(block);
+    });
 }
 
-loadPeople();
+loadPersons();
