@@ -6,11 +6,13 @@ const supabase = supabase_js.createClient(
 
 async function loadPeople() {
   const container = document.getElementById("people-container");
-  container.innerHTML = "Loading...";
+  container.innerHTML = "Cargando datos...";
 
+  // Consulta filtrando solo donde cec == true
   const { data, error } = await supabase
     .from("personas")
-    .select("nombre, cargo, mail");
+    .select("nombre, apellido, cargo, mail, cec")
+    .eq("cec", true);
 
   if (error) {
     container.innerHTML = `<p style="color:red;">${error.message}</p>`;
@@ -19,14 +21,16 @@ async function loadPeople() {
 
   container.innerHTML = "";
 
-  data.forEach(person => {
+  data.forEach(persona => {
     const div = document.createElement("div");
     div.className = "person-card";
+
     div.innerHTML = `
-      <h1>${person.role}</h1>
-      <h2>${person.name}</h2>
-      <h3>${person.email}</h3>
+      <h1>${persona.cargo}</h1>
+      <h2>${persona.nombre} ${persona.apellido}</h2>
+      <h3>${persona.mail}</h3>
     `;
+
     container.appendChild(div);
   });
 }
