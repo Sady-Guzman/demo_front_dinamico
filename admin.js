@@ -24,9 +24,8 @@ async function loadAll() {
         <strong>${p.nombre} ${p.apellido}</strong>
         <br>
         <label>Correo: </label>
-        // <input id="mail-${p.id}" value="${p.mail}">
         <p>${p.mail}</p>
-        <br><br>
+        <br>
 
         <label>
           <input type="checkbox" id="cec-${p.id}" ${p.cec ? "checked" : ""}>
