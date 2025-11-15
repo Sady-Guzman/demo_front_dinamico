@@ -1,132 +1,33 @@
-const supabase = supabase_js.createClient(
-  "https://cpmygciraogszswfzsiq.supabase.co",
-  "OeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNwbXlnY2lyYW9nc3pzd2Z6c2lxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMyMjU3ODQsImV4cCI6MjA3ODgwMTc4NH0.Nr2sCPc6-pLUJTJFputQMRy2CFvx0EicYbBvtpjNvaQ"
-);
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
-// -----------------------
-// CARGA DE DATOS
-// -----------------------
+const supabaseUrl = "https://cpmygciraogszswfzsiq.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNwbXlnY2lyYW9nc3pzd2Z6c2lxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMyMjU3ODQsImV4cCI6MjA3ODgwMTc4NH0.Nr2sCPc6-pLUJTJFputQMRy2CFvx0EicYbBvtpjNvaQ";
+export const supabase = createClient(supabaseUrl, supabaseKey);
 
-async function cargarCEC() {
+// Cargar solo CEC
+export async function loadCEC() {
   const { data, error } = await supabase
     .from("personas")
     .select("*")
     .eq("cec", true);
 
-  const cont = document.getElementById("lista-cec");
-  cont.innerHTML = "";
-
-  data?.forEach(p => {
-    const div = document.createElement("div");
-    div.classList.add("person");
-    div.textContent = `${p.nombre} — ${p.cargo}`;
-    cont.appendChild(div);
-  });
-}
-
-async function cargarTodas() {
-  const { data, error } = await supabase
-    .from("personas")
-    .select("*");
-
-  const cont = document.getElementById("lista-todas");
-  cont.innerHTML = "";
-
-  data?.forEach(p => {
-    const div = document.createElement("div");
-    div.classList.add("person");
-
-    div.innerHTML = `
-      ${p.nombre} — ${p.cargo ?? "Sin cargo"}
-      <br>
-      <label>
-        <input type="checkbox" class="toggleCEC" data-id="${p.id}" ${p.cec ? "checked" : ""}>
-        CEC
-      </label>
-    `;
-
-    cont.appendChild(div);
-  });
-
-  agregarEventosToggle();
-}
-
-// -----------------------
-// AGREGAR PERSONA
-// -----------------------
-
-document.getElementById("btn-add").addEventListener("click", async () => {
-  const nombre = document.getElementById("nombre").value;
-  const cargo = document.getElementById("cargo").value;
-  const esCec = document.getElementById("esCec").checked;
-
-  if (!nombre) {
-    alert("Debe ingresar un nombre");
-    return;
-  }
-
-  const { error } = await supabase
-    .from("personas")
-    .insert({
-      nombre,
-      cargo: cargo || null,
-      cec: esCec
-    });
-
   if (error) {
-    alert("Error al agregar");
+    console.error(error);
     return;
   }
 
-  document.getElementById("nombre").value = "";
-  document.getElementById("cargo").value = "";
-  document.getElementById("esCec").checked = false;
+  const container = document.getElementById("person-list");
+  if (!container) return;
+  container.innerHTML = "";
 
-  cargarCEC();
-  cargarTodas();
-});
-
-// -----------------------
-// TOGGLE DE CEC
-// -----------------------
-function agregarEventosToggle() {
-  const toggles = document.querySelectorAll(".toggleCEC");
-
-  toggles.forEach(t => {
-    t.addEventListener("change", async () => {
-      const id = t.dataset.id;
-      const nuevoValor = t.checked;
-
-      await supabase
-        .from("personas")
-        .update({ cec: nuevoValor })
-        .eq("id", id);
-
-      cargarCEC();
-    });
+  data.forEach(p => {
+    const div = document.createElement("div");
+    div.innerHTML = `
+      <h2>${p.nombre} ${p.apellido}</h2>
+      <p>${p.cargo}</p>
+      <p>${p.mail}</p>
+      <hr>
+    `;
+    container.appendChild(div);
   });
 }
-
-// -----------------------
-// SISTEMA DE PESTAÑAS
-// -----------------------
-document.getElementById("tab-cec").addEventListener("click", () => {
-  activarPestaña("cec");
-});
-document.getElementById("tab-todas").addEventListener("click", () => {
-  activarPestaña("todas");
-});
-
-function activarPestaña(nombre) {
-  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
-
-  document.getElementById(`tab-${nombre}`).classList.add("active");
-  document.getElementById(`view-${nombre}`).classList.add("active");
-}
-
-// -----------------------
-// INICIO
-// -----------------------
-cargarCEC();
-cargarTodas();
