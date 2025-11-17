@@ -1,6 +1,8 @@
 import { supabase } from "./main.js";
 
-// Cargar todas las personas
+/* ============================
+      CARGAR TODAS LAS PERSONAS
+   ============================ */
 async function loadAll() {
   const { data, error } = await supabase
     .from("personas")
@@ -11,19 +13,25 @@ async function loadAll() {
     return;
   }
 
+  renderList(data);
+}
+
+/* ============================
+        RENDERIZAR LISTA
+   ============================ */
+function renderList(data) {
   const container = document.getElementById("admin-list");
   container.innerHTML = "";
 
   data.forEach(p => {
     const item = document.createElement("div");
-
     const cargoVisible = p.cec ? "block" : "none";
 
     item.innerHTML = `
       <div style="border:1px solid #ccc; padding: 12px; border-radius: 8px; margin-bottom: 10px;">
         <strong>${p.nombre} ${p.apellido}</strong>
         <br>
-        <label>Correo: </label>
+        <label>Correo:</label>
         <p>${p.mail}</p>
         <br>
 
@@ -60,7 +68,9 @@ async function loadAll() {
   });
 }
 
-// ACTUALIZAR PERSONA
+/* ============================
+        ACTUALIZAR PERSONA
+   ============================ */
 async function updatePerson(id) {
   const cec = document.getElementById(`cec-${id}`).checked;
   const cargo = cec ? document.getElementById(`cargo-${id}`).value : null;
@@ -83,7 +93,9 @@ async function updatePerson(id) {
   loadAll();
 }
 
-// BOTÓN PARA AGREGAR PERSONA NUEVA
+/* ============================
+        AGREGAR PERSONA
+   ============================ */
 async function addPerson() {
   const nombre = document.getElementById("nombre").value;
   const apellido = document.getElementById("apellido").value;
@@ -104,6 +116,50 @@ async function addPerson() {
   loadAll();
 }
 
+/* ============================
+            FILTROS
+   ============================ */
+async function applyFilters() {
+  const filtroNombre = document.getElementById("filtro-nombre").value.toLowerCase();
+  const filtroCec = document.getElementById("filtro-cec").value;
+
+  const { data, error } = await supabase
+    .from("personas")
+    .select("*");
+
+  if (error) {
+    console.error("Error cargando datos:", error);
+    return;
+  }
+
+  let filtrados = data;
+
+  // 🔍 FILTRAR POR NOMBRE
+  if (filtroNombre.trim() !== "") {
+    filtrados = filtrados.filter(p =>
+      (p.nombre + " " + p.apellido).toLowerCase().includes(filtroNombre)
+    );
+  }
+
+  // 🔍 FILTRAR POR CEC
+  if (filtroCec === "true") {
+    filtrados = filtrados.filter(p => p.cec === true);
+  } else if (filtroCec === "false") {
+    filtrados = filtrados.filter(p => p.cec === false);
+  }
+
+  renderList(filtrados);
+}
+
+/* ============================
+         EVENT LISTENERS
+   ============================ */
+
+// Agregar persona
 document.getElementById("add-btn").addEventListener("click", addPerson);
 
+// Filtros
+document.getElementById("btn-filtrar").addEventListener("click", applyFilters);
+
+// Cargar datos iniciales
 loadAll();
