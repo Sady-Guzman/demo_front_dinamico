@@ -8,6 +8,23 @@
 
   <h1>Administrar Personas</h1>
 
+  <!-- 🔍 FILTROS -->
+  <h2>Filtros</h2>
+  <input id="filtro-nombre" placeholder="Buscar por nombre...">
+
+  <label>
+    Mostrar:
+    <select id="filtro-cec">
+      <option value="todos">Todos</option>
+      <option value="true">Solo CEC</option>
+      <option value="false">Solo no CEC</option>
+    </select>
+  </label>
+
+  <button id="btn-filtrar">Aplicar filtros</button>
+
+  <hr><br>
+
   <h2>Agregar persona</h2>
   <input id="nombre" placeholder="Nombre">
   <input id="apellido" placeholder="Apellido">
