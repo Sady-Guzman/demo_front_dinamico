@@ -62,14 +62,12 @@ async function loadAll() {
 
 // ACTUALIZAR PERSONA
 async function updatePerson(id) {
-  const mail = document.getElementById(`mail-${id}`).value;
   const cec = document.getElementById(`cec-${id}`).checked;
   const cargo = cec ? document.getElementById(`cargo-${id}`).value : null;
 
   const { error } = await supabase
     .from("personas")
     .update({
-      mail,
       cec,
       cargo
     })
