@@ -1,11 +1,12 @@
 import { createClient } from "@supabase/supabase-js";
 
+// Crear cliente usando variables de entorno seguras
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE
 );
 
-// Filtro simple: extraer ID y construir embed
+// Convierte URL tipo "watch?v=ID" en "/embed/ID"
 function youtubeToEmbed(url) {
   try {
     const parsed = new URL(url);
@@ -28,13 +29,16 @@ export default async function handler(req, res) {
     return res.status(400).json({ ok: false, error: "Datos incompletos" });
   }
 
+  // Convertir URL entregada a formato embed (sin timestamp)
   const embed = youtubeToEmbed(url_video);
+
   if (!embed) {
     return res.status(400).json({ ok: false, error: "URL inválida" });
   }
 
+  // Guardar en tabla "destacados"
   const { error } = await supabase
-    .from("videos")
+    .from("destacados")
     .insert({
       nombre_completo,
       nivel_estudiante,

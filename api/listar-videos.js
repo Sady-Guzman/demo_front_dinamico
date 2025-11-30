@@ -1,17 +1,23 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE
+);
 
 export default async function handler(req, res) {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
-  );
+  if (req.method !== "GET") {
+    return res.status(405).json({ ok: false, error: "Método no permitido" });
+  }
 
   const { data, error } = await supabase
-    .from('videos_estudiantes')
-    .select('*')
-    .order('id', { ascending: false });
+    .from("destacados")
+    .select("*")
+    .order("id", { ascending: false });
 
-  if (error) return res.status(500).json({ error: error.message });
+  if (error) {
+    return res.status(500).json({ ok: false, error: error.message });
+  }
 
-  return res.status(200).json(data);
+  res.status(200).json({ ok: true, data });
 }
