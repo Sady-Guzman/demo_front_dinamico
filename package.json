@@ -1,0 +1,12 @@
+{
+  "name": "demo-front-dinamico",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.31.0"
+  },
+  "scripts": {
+    "start": "vercel dev",
+    "build": "echo no build"
+  }
+}
