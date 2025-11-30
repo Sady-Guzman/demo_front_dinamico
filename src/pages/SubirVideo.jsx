@@ -45,6 +45,13 @@ export default function SubirVideo() {
       <button onClick={enviar} className="bg-blue-600 text-white p-2">
         Subir
       </button>
+      <a
+        href="/videos"
+        className="underline text-blue-600 block mt-4 text-center"
+        >
+        Ver videos subidos
+      </a>
+
     </div>
   );
 }
