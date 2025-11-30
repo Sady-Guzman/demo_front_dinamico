@@ -3,9 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 export default async function handler(req, res) {
   try {
     if (req.method !== "POST") {
-      return res
-        .status(405)
-        .json({ ok: false, msg: "Método no permitido" });
+      return res.status(405).json({ ok: false, msg: "Método no permitido" });
     }
 
     const SUPABASE_URL = process.env.SUPABASE_URL;
@@ -22,8 +20,6 @@ export default async function handler(req, res) {
 
     const { nombre_completo, nivel_estudiante, url_video } = req.body;
 
-    console.log("BODY RECIBIDO:", req.body);
-
     if (!nombre_completo || !nivel_estudiante || !url_video) {
       return res.status(400).json({
         ok: false,
@@ -32,7 +28,7 @@ export default async function handler(req, res) {
     }
 
     const { data, error } = await supabase
-      .from("destacados")  // 💥 ESTA ES TU TABLA REAL
+      .from("destacados")
       .insert([{ nombre_completo, nivel_estudiante, url_video }])
       .select();
 
@@ -40,7 +36,7 @@ export default async function handler(req, res) {
       console.error("Supabase error:", error);
       return res.status(500).json({
         ok: false,
-        msg: "Error al insertar en Supabase",
+        msg: "Error al insertar",
         detalle: error.message,
       });
     }
@@ -48,10 +44,6 @@ export default async function handler(req, res) {
     return res.json({ ok: true, data });
   } catch (e) {
     console.error("Error inesperado:", e);
-    return res.status(500).json({
-      ok: false,
-      msg: "Error inesperado",
-      detalle: e.message,
-    });
+    return res.status(500).json({ ok: false, msg: "Error inesperado", detalle: e.message });
   }
 }
