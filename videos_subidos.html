@@ -1,22 +1,31 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8" />
-  <title>Videos Subidos</title>
-</head>
 <body>
+  <h1>Videos subidos</h1>
+  <div id="lista"></div>
 
-  <button onclick="location.href='index.html'">Subir nuevo video</button>
+  <script>
+    async function cargar() {
+      const res = await fetch('/api/listar-videos');
+      const json = await res.json();
 
-  <h1>Videos Subidos</h1>
+      if (!json.ok) {
+        document.getElementById("lista").innerHTML = "Error al cargar.";
+        return;
+      }
 
-  <div id="lista-videos"></div>
+      const cont = document.getElementById("lista");
+      cont.innerHTML = "";
 
-  <script src="videos_subidos.js"></script>
+      json.data.forEach(v => {
+        const box = document.createElement("div");
+        box.innerHTML = `
+          <h3>${v.nombre_completo} (${v.nivel_estudiante})</h3>
+          <iframe width="400" height="225" src="${v.url_video}" frameborder="0"></iframe>
+          <hr>
+        `;
+        cont.appendChild(box);
+      });
+    }
+
+    cargar();
+  </script>
 </body>
-</html>
-
-
-
-
-
