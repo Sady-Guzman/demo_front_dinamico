@@ -4,7 +4,7 @@ export default function SubirVideo() {
   const [form, setForm] = useState({
     nombre_completo: "",
     nivel_estudiante: "",
-    url: ""
+    url_video: ""
   });
 
   async function enviar() {
@@ -45,13 +45,13 @@ export default function SubirVideo() {
       <button onClick={enviar} className="bg-blue-600 text-white p-2">
         Subir
       </button>
+
       <a
         href="/videos"
         className="underline text-blue-600 block mt-4 text-center"
-        >
+      >
         Ver videos subidos
       </a>
-
     </div>
   );
 }

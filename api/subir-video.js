@@ -6,14 +6,15 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { url } = req.body;
+    const { nombre_completo, nivel_estudiante, url_video } = req.body;
 
-    if (!url) {
+    // Validaciones básicas
+    if (!url_video) {
       return res.status(400).json({ message: "Falta la URL del video" });
     }
 
     // -----------------------------
-    // CONVERSOR DE YOUTUBE A EMBED
+    // Conversor de YouTube a embed
     // -----------------------------
     function youtubeToEmbed(original) {
       const u = new URL(original);
@@ -30,20 +31,24 @@ export default async function handler(req, res) {
       }`;
     }
 
-    const embedUrl = youtubeToEmbed(url);
+    const embedUrl = youtubeToEmbed(url_video);
 
     // -----------------------------
-    // SUPABASE CLIENT
+    // Supabase client
     // -----------------------------
     const supabase = createClient(
       process.env.SUPABASE_URL,
       process.env.SUPABASE_SERVICE_ROLE
     );
 
-    // Insertamos en la tabla
-    const { data, error } = await supabase
-      .from("destacados")
-      .insert([{ url: embedUrl }]);
+    // Insertar en la tabla
+    const { data, error } = await supabase.from("destacados").insert([
+      {
+        nombre_completo,
+        nivel_estudiante,
+        url_video: embedUrl
+      }
+    ]);
 
     if (error) {
       console.error("Error al insertar:", error);
