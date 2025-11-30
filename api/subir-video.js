@@ -1,58 +1,45 @@
 import { createClient } from "@supabase/supabase-js";
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ message: "Método no permitido" });
-  }
-
   try {
-    const { url } = req.body;
-
-    if (!url) {
-      return res.status(400).json({ message: "Falta la URL del video" });
+    if (req.method !== "POST") {
+      return res.status(405).json({ ok: false, msg: "Método no permitido" });
     }
 
-    // -----------------------------
-    // CONVERSOR DE YOUTUBE A EMBED
-    // -----------------------------
-    function youtubeToEmbed(original) {
-      const u = new URL(original);
-      const id = u.searchParams.get("v");
-      let start = 0;
+    const { SUPABASE_URL, SUPABASE_SERVICE_ROLE } = process.env;
 
-      const t = u.searchParams.get("t");
-      if (t) {
-        start = parseInt(t.replace("s", ""), 10);
-      }
-
-      return `https://www.youtube.com/embed/${id}${
-        start ? `?start=${start}` : ""
-      }`;
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE) {
+      return res.status(500).json({
+        ok: false,
+        msg: "Faltan variables de entorno en Vercel"
+      });
     }
 
-    const embedUrl = youtubeToEmbed(url);
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE);
 
-    // -----------------------------
-    // SUPABASE CLIENT
-    // -----------------------------
-    const supabase = createClient(
-      process.env.SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE
-    );
+    const { nombre_completo, nivel_estudiante, url_video } = req.body || {};
 
-    // Insertamos en la tabla
+    if (!nombre_completo || !nivel_estudiante || !url_video) {
+      return res.status(400).json({ ok: false, msg: "Faltan campos" });
+    }
+
     const { data, error } = await supabase
       .from("destacados")
-      .insert([{ url: embedUrl }]);
+      .insert([{ nombre_completo, nivel_estudiante, url_video }])
+      .select();
 
     if (error) {
-      console.error("Error al insertar:", error);
-      return res.status(500).json({ message: "Error al insertar video" });
+      console.error("Supabase error:", error);
+      return res
+        .status(500)
+        .json({ ok: false, msg: "Error en Supabase", detalle: error.message });
     }
 
-    return res.json({ success: true, data });
-  } catch (err) {
-    console.error("Error interno:", err);
-    return res.status(500).json({ message: "Error interno" });
+    return res.json({ ok: true, data });
+  } catch (e) {
+    console.error("Error inesperado:", e);
+    return res
+      .status(500)
+      .json({ ok: false, msg: "Error inesperado", detalle: e.message });
   }
 }
