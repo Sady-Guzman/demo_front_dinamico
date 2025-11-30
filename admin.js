@@ -1,21 +1,24 @@
-async function cargarVideos() {
-  const res = await fetch('/api/listar-videos');
-  const videos = await res.json();
+async function subir() {
+  const payload = {
+    nombre_completo: document.getElementById("nombre").value,
+    nivel_estudiante: document.getElementById("nivel").value,
+    url_video: document.getElementById("video_url").value
+  };
 
-  const contenedor = document.getElementById('lista');
-  contenedor.innerHTML = "";
+  console.log("Enviando payload:", payload);
 
-  videos.forEach(v => {
-    const card = document.createElement("div");
-    card.innerHTML = `
-      <h3>${v.nombre_completo} — ${v.nivel_estudiante}</h3>
-      <iframe width="560" height="315"
-        src="${v.url_video}"
-        allowfullscreen></iframe>
-      <hr>
-    `;
-    contenedor.appendChild(card);
+  const res = await fetch('/api/subir-video', {
+    method: 'POST',
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
   });
-}
 
-cargarVideos();
+  const json = await res.json();
+  console.log("Respuesta del servidor:", json);
+
+  if (json.ok) {
+    alert("Video subido correctamente");
+  } else {
+    alert("Error: " + json.msg);
+  }
+}
